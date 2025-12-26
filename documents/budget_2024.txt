@@ -1,0 +1,28 @@
+# CDC TECH FEST 2025 - SCHEDULE
+
+**Document ID:** CDC-2025-003
+
+## Event: CIPHER - Annual Technical Fest
+
+### Day 1 - January 25, 2025
+- 09:00 AM - Inauguration Ceremony
+- 11:00 AM - Coding Contest (Round 1)
+- 02:00 PM - Robotics Workshop
+- 05:00 PM - Tech Quiz Prelims
+
+### Day 2 - January 26, 2025  
+- 10:00 AM - Hackathon Begins (24 hrs)
+- 02:00 PM - CTF Competition (Paramecium)
+- 04:00 PM - Project Exhibition
+- 07:00 PM - Cultural Night
+
+### Day 3 - January 27, 2025
+- 10:00 AM - Hackathon Ends
+- 02:00 PM - Prize Distribution
+- 04:00 PM - Closing Ceremony
+
+## Registration
+Open for all MMMUT students and external participants.
+
+---
+*Coders and Developers Club (CDC), MMMUT*

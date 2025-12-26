@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMMUT - Document Portal</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #0d1f33;
+            --accent: #e63946;
+            --gold: #f4a226;
+            --light: #f8f9fa;
+            --text: #2d3436;
+            --success: #00b894;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-text h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .brand-text .sub {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        .badge {
+            background: var(--accent);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Main Layout */
+        .main {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: calc(100vh - 110px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 30px 20px;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .doc-list {
+            list-style: none;
+        }
+
+        .doc-item {
+            padding: 15px 18px;
+            margin-bottom: 10px;
+            background: var(--light);
+            border: 1px solid #e8e8e8;
+            border-left: 4px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .doc-item:hover {
+            background: #eef4ff;
+            border-left-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .doc-item.active {
+            background: #e3ecfa;
+            border-left-color: var(--primary);
+        }
+
+        .doc-icon {
+            font-size: 1.3rem;
+        }
+
+        .doc-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* Info Box */
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffebeb 100%);
+            border: 1px solid #ffcccc;
+            border-radius: 10px;
+        }
+
+        .info-box h3 {
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            font-size: 0.8rem;
+            line-height: 1.7;
+            color: #666;
+        }
+
+        .info-box code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 40px;
+        }
+
+        .doc-viewer {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .viewer-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .viewer-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .viewer-badge {
+            font-size: 0.65rem;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+        }
+
+        .viewer-content {
+            padding: 30px;
+            min-height: 350px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: #444;
+            background: #fafbfc;
+        }
+
+        .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 350px;
+            color: #999;
+        }
+
+        .placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .placeholder-text {
+            font-size: 1rem;
+        }
+
+        /* Verify Section */
+        .verify-section {
+            margin-top: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .verify-section h3 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .verify-form {
+            display: flex;
+            gap: 15px;
+        }
+
+        .verify-input {
+            flex: 1;
+            padding: 15px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            background: var(--light);
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .verify-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.1);
+        }
+
+        .verify-input::placeholder {
+            color: #aaa;
+        }
+
+        .verify-btn {
+            padding: 15px 35px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 58, 95, 0.3);
+        }
+
+        .verify-msg {
+            margin-top: 20px;
+            padding: 18px 22px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .verify-msg.active {
+            display: block;
+        }
+
+        .verify-msg.success {
+            background: #e8f8f5;
+            border: 1px solid var(--success);
+            color: #00795c;
+        }
+
+        .verify-msg.error {
+            background: #fdf2f2;
+            border: 1px solid var(--accent);
+            color: #c93c3c;
+        }
+
+        .bug-found {
+            margin-top: 15px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 8px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* CDC Badge */
+        .cdc-badge {
+            margin-top: 30px;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--gold) 0%, #e59400 100%);
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="brand">
+            <div class="logo">M</div>
+            <div class="brand-text">
+                <h1>MMMUT GORAKHPUR</h1>
+                <div class="sub">Madan Mohan Malviya University of Technology</div>
+            </div>
+        </div>
+        <div class="badge">🔒 RESTRICTED ACCESS</div>
+    </header>
+
+    <main class="main">
+        <aside class="sidebar">
+            <h2 class="sidebar-title">📁 Document Library</h2>
+            <ul class="doc-list" id="docList">
+                <li class="doc-item">
+                    <span class="doc-icon">⏳</span>
+                    <span class="doc-name">Loading documents...</span>
+                </li>
+            </ul>
+
+            <div class="info-box">
+                <h3>⚠️ Security Notice</h3>
+                <p>
+                    Documents are served via the <code>/api/document?file=</code> endpoint.
+                    Only files within the authorized directory should be accessible.
+                </p>
+                <p style="margin-top: 10px;">
+                    Unauthorized access attempts are logged and monitored.
+                </p>
+            </div>
+
+            <div class="cdc-badge">
+                🖥️ Powered by Coders and Developers Club (CDC)
+            </div>
+        </aside>
+
+        <section class="content">
+            <div class="doc-viewer">
+                <div class="viewer-header">
+                    <span class="viewer-title" id="viewerTitle">SELECT A DOCUMENT</span>
+                    <span class="viewer-badge" id="viewerBadge">NO FILE LOADED</span>
+                </div>
+                <div class="viewer-content" id="viewerContent">
+                    <div class="placeholder">
+                        <div class="placeholder-icon">📄</div>
+                        <div class="placeholder-text">Select a document from the sidebar</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verify-section">
+                <h3>🔐 Submit Authorization Code</h3>
+                <div class="verify-form">
+                    <input type="text" class="verify-input" id="codeInput"
+                        placeholder="Enter admin authorization code...">
+                    <button class="verify-btn" onclick="verifyCode()">VERIFY</button>
+                </div>
+                <div id="verifyMsg" class="verify-msg"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function loadDocuments() {
+            try {
+                const res = await fetch('/api/documents');
+                const data = await res.json();
+
+                const list = document.getElementById('docList');
+                list.innerHTML = '';
+
+                data.documents.forEach(doc => {
+                    const li = document.createElement('li');
+                    li.className = 'doc-item';
+                    li.innerHTML = `<span class="doc-icon">📄</span><span class="doc-name">${doc.displayName}</span>`;
+                    li.onclick = () => loadDocument(doc.name);
+                    list.appendChild(li);
+                });
+            } catch (e) {
+                console.error('Failed to load documents:', e);
+            }
+        }
+
+        async function loadDocument(filename) {
+            try {
+                document.querySelectorAll('.doc-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.querySelector('.doc-name')?.textContent === filename.replace(/_/g, ' ').replace('.txt', '').toUpperCase()) {
+                        item.classList.add('active');
+                    }
+                });
+
+                const res = await fetch(`/api/document?file=${encodeURIComponent(filename)}`);
+                const data = await res.json();
+
+                document.getElementById('viewerTitle').textContent = filename.toUpperCase();
+                document.getElementById('viewerBadge').textContent = 'RESTRICTED';
+
+                if (data.success) {
+                    document.getElementById('viewerContent').textContent = data.content;
+                } else {
+                    document.getElementById('viewerContent').innerHTML = `<div class="placeholder"><div class="placeholder-icon">❌</div><div class="placeholder-text">${data.error}</div></div>`;
+                }
+            } catch (e) {
+                document.getElementById('viewerContent').innerHTML = `<div class="placeholder"><div class="placeholder-icon">❌</div><div class="placeholder-text">Failed to load document</div></div>`;
+            }
+        }
+
+        async function verifyCode() {
+            const code = document.getElementById('codeInput').value.trim();
+            if (!code) return;
+
+            try {
+                const res = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+
+                const msgEl = document.getElementById('verifyMsg');
+                msgEl.className = 'verify-msg active ' + (data.success ? 'success' : 'error');
+
+                if (data.success) {
+                    msgEl.innerHTML = '✅ ' + data.message + `<div class="bug-found">🐛 ${data.bugFound}</div>`;
+                } else {
+                    msgEl.textContent = '❌ ' + data.message;
+                }
+            } catch (e) {
+                console.error('Verify failed:', e);
+            }
+        }
+
+        document.getElementById('codeInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verifyCode();
+        });
+
+        // Anti-debugging: Disable right-click
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        });
+
+        // Anti-debugging: Disable keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+I (Dev Tools)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+J (Console)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+C (Inspect Element)
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+S (Save)
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        loadDocuments();
+    </script>
+</body>
+
+</html>

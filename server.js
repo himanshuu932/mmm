@@ -1,0 +1,94 @@
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.static('public'));
+
+const SECRET_CODE = process.env.SECRET_CODE || 'OMEGA_CLEARANCE_7749';
+const DOCUMENTS_DIR = path.join(__dirname, 'documents');
+
+// List available documents
+app.get('/api/documents', (req, res) => {
+    try {
+        const files = fs.readdirSync(DOCUMENTS_DIR);
+        const documents = files.map(file => ({
+            name: file,
+            displayName: file.replace(/_/g, ' ').replace('.txt', '').toUpperCase()
+        }));
+        res.json({ success: true, documents });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to list documents' });
+    }
+});
+
+// VULNERABLE ENDPOINT - Path Traversal
+app.get('/api/document', (req, res) => {
+    const filename = req.query.file;
+
+    if (!filename) {
+        return res.status(400).json({ error: 'File parameter required' });
+    }
+
+    // VULNERABILITY: No proper sanitization of user input!
+    // An attacker can use ../ to traverse directories
+    // Example: ?file=../secret.txt
+
+    const filePath = path.join(DOCUMENTS_DIR, filename);
+
+    // Weak check - only verifies extension, not path traversal
+    if (!filename.endsWith('.txt')) {
+        return res.status(403).json({ error: 'Access denied. Only .txt files allowed.' });
+    }
+
+    try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        res.json({ success: true, filename, content });
+    } catch (err) {
+        res.status(404).json({ error: 'Document not found or access denied.' });
+    }
+});
+
+// Verify code endpoint
+app.post('/api/verify', (req, res) => {
+    const { code } = req.body;
+
+    if (code === SECRET_CODE) {
+        res.json({
+            success: true,
+            message: "ACCESS GRANTED - OMEGA CLEARANCE VERIFIED",
+            bugFound: "BUG_FOUND{path_traversal_document_leak}"
+        });
+    } else {
+        res.json({
+            success: false,
+            message: "Invalid authorization code."
+        });
+    }
+});
+
+// Health check
+app.get('/ping', (req, res) => {
+    res.json({ status: 'alive', timestamp: new Date().toISOString() });
+});
+
+app.listen(PORT, () => {
+    console.log(`Paramecium Archives running on port ${PORT}`);
+    console.log(`Documents directory: ${DOCUMENTS_DIR}`);
+    console.log(`Ping endpoint: /ping`);
+
+    // Self-ping for Render
+    const PING_INTERVAL = 10 * 60 * 1000;
+    setInterval(() => {
+        const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+        fetch(`${url}/ping`)
+            .then(r => r.json())
+            .then(d => console.log(`[KEEP-ALIVE] Pinged at ${d.timestamp}`))
+            .catch(e => console.log(`[KEEP-ALIVE] Ping failed: ${e.message}`));
+    }, PING_INTERVAL);
+    console.log(`[KEEP-ALIVE] Self-ping enabled every 10 minutes`);
+});
