@@ -9,8 +9,28 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static('public'));
 
-const SECRET_CODE = process.env.SECRET_CODE || 'OMEGA_CLEARANCE_7749';
+const SECRET_CODE = process.env.SECRET_CODE || 'MMMUT_CDC_ADMIN_2025';
+const QUESTION_ID = process.env.QUESTION_ID || 'level3_path_traversal';
 const DOCUMENTS_DIR = path.join(__dirname, 'documents');
+const MAIN_BACKEND_URL = 'https://buggit-backend-yy8i.onrender.com/api/store-result';
+
+// Helper function to send result to main backend (backend-to-backend)
+async function sendToMainBackend(teamcode, questionId) {
+    try {
+        const response = await fetch(MAIN_BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ teamcode, questionId })
+        });
+
+        const result = await response.json();
+        console.log("[BACKEND-SYNC] Stored in Main Backend:", result);
+        return { success: true, result };
+    } catch (error) {
+        console.error("[BACKEND-SYNC] Error contacting main backend:", error.message);
+        return { success: false, error: error.message };
+    }
+}
 
 // List available documents
 app.get('/api/documents', (req, res) => {
@@ -35,12 +55,8 @@ app.get('/api/document', (req, res) => {
     }
 
     // VULNERABILITY: No proper sanitization of user input!
-    // An attacker can use ../ to traverse directories
-    // Example: ?file=../secret.txt
-
     const filePath = path.join(DOCUMENTS_DIR, filename);
 
-    // Weak check - only verifies extension, not path traversal
     if (!filename.endsWith('.txt')) {
         return res.status(403).json({ error: 'Access denied. Only .txt files allowed.' });
     }
@@ -54,14 +70,22 @@ app.get('/api/document', (req, res) => {
 });
 
 // Verify code endpoint
-app.post('/api/verify', (req, res) => {
-    const { code } = req.body;
+app.post('/api/verify', async (req, res) => {
+    const { code, teamcode } = req.body;
 
     if (code === SECRET_CODE) {
-        res.json({
+        // Use provided teamcode or default
+        const y = teamcode || '382045158047';
+
+        // Backend-to-backend call to main server
+        const syncResult = await sendToMainBackend(y, QUESTION_ID);
+
+        return res.json({
             success: true,
             message: "ACCESS GRANTED - OMEGA CLEARANCE VERIFIED",
-            bugFound: "BUG_FOUND{path_traversal_document_leak}"
+            bugFound: "BUG_FOUND{path_traversal_document_leak}",
+            redirect: "/dashboard",
+            backendSync: syncResult
         });
     } else {
         res.json({
@@ -77,8 +101,9 @@ app.get('/ping', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Paramecium Archives running on port ${PORT}`);
-    console.log(`Documents directory: ${DOCUMENTS_DIR}`);
+    console.log(`MMMUT Document Portal running on port ${PORT}`);
+    console.log(`Question ID: ${QUESTION_ID}`);
+    console.log(`Main Backend: ${MAIN_BACKEND_URL}`);
     console.log(`Ping endpoint: /ping`);
 
     // Self-ping for Render
