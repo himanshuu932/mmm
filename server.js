@@ -80,12 +80,12 @@ app.post('/api/verify', async (req, res) => {
         // Backend-to-backend call to main server
         const syncResult = await sendToMainBackend(y, QUESTION_ID);
          console.log("Sync result:", syncResult);
-         
+
         return res.json({
             success: true,
             message: "ACCESS GRANTED - OMEGA CLEARANCE VERIFIED",
             bugFound: "BUG_FOUND{path_traversal_document_leak}",
-            redirect: "/dashboard",
+            redirect: "https://bug-hunt-manager-tau.vercel.app/dashboard",
             backendSync: syncResult
         });
     } else {

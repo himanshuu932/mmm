@@ -504,6 +504,24 @@
 
                 if (data.success) {
                     msgEl.innerHTML = '✅ ' + data.message + `<div class="bug-found">🐛 ${data.bugFound}</div>`;
+
+                    // Redirect after 3 seconds if redirect URL is present
+                    if (data.redirect) {
+                        msgEl.innerHTML += `<div style="margin-top: 15px; color: var(--primary);">🔄 Redirecting to dashboard in <span id="countdown">3</span> seconds...</div>`;
+
+                        let seconds = 3;
+                        const countdownInterval = setInterval(() => {
+                            seconds--;
+                            const countdownEl = document.getElementById('countdown');
+                            if (countdownEl) {
+                                countdownEl.textContent = seconds;
+                            }
+                            if (seconds <= 0) {
+                                clearInterval(countdownInterval);
+                                window.location.href = data.redirect;
+                            }
+                        }, 1000);
+                    }
                 } else {
                     msgEl.textContent = '❌ ' + data.message;
                 }
